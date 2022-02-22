@@ -17,29 +17,24 @@ int main(int argc, char* argv[])
 {
 	timeControl mainTime;
 
-	std::vector<float>graph;	
-	std::vector<unsigned char> img_buffer;	
-	std::vector<unsigned char> freq_buffer;
-
 	imageDSP* myImage = new imageDSP(imageName2); //Cria o objeto na heap passando apenas o path para o construtor
 
 	myImage->readImage();
-	myImage->copyImageData(img_buffer);
-	myImage->brigthnessControl(-150, img_buffer);
-	myImage->writeImage("images/imageDarker.bmp", img_buffer);
+	myImage->brigthnessControl(-15);
+	myImage->writeImage("images/imageDarker.bmp");
 	
 	//Criando o Histograma foto original escurecida
-	myImage->computeHistogram(img_buffer, graph, GREYSCALE);
-	myImage->writeHistogram("notes/original.txt", graph);
-	//myImage->cumulativeFrequency("notes/FREQ_ORIG.txt", img_buffer);
+	myImage->computeHistogram(GREYSCALE);
+	myImage->writeHistogram("notes/original.txt");
+	myImage->cumulativeFrequency("notes/FREQ_ORIG.txt");
 
 	//Equalizando o Histograma 
-	myImage->equalizeHistogram(img_buffer, 255);
-	myImage->computeHistogram(img_buffer, graph, GREYSCALE);
-	myImage->writeHistogram("notes/equalizada.txt", graph);
+	myImage->equalizeHistogram(255);
+	myImage->computeHistogram(GREYSCALE);
+	myImage->writeHistogram("notes/equalizada.txt");
 	//myImage->cumulativeFrequency("notes/FREQ_EQUAL.txt", img_buffer);
 
-	myImage->writeImage("images/equalizada.bmp", img_buffer);
+	myImage->writeImage("images/equalizada.bmp");
 
 	delete myImage;
 

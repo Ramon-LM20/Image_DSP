@@ -8,13 +8,12 @@ imageDSP::~imageDSP()
 { 
 
 }
-
-void imageDSP::brigthnessControl(int _brightness_threshold, std::vector<unsigned char>& _outBuf)
+void imageDSP::brigthnessControl(int _brightness_threshold)
 {
 	long int sizeBuffer = 0;
 
 	sizeBuffer = this->buffer.size();
-	_outBuf.resize(sizeBuffer);
+	m_outBuffer.resize(sizeBuffer);
 
 	if (_brightness_threshold > 0)
 	{
@@ -22,7 +21,7 @@ void imageDSP::brigthnessControl(int _brightness_threshold, std::vector<unsigned
 		{
 			int temp = (buffer[i] + _brightness_threshold);
 
-			_outBuf[i] = (temp > 255) ? 255 : temp;
+			m_outBuffer[i] = (temp > 255) ? 255 : temp;
 		}
 	}
 	if (_brightness_threshold < 0)
@@ -31,7 +30,7 @@ void imageDSP::brigthnessControl(int _brightness_threshold, std::vector<unsigned
 		{
 			int temp = (buffer[i] + _brightness_threshold);
 
-			_outBuf[i] = (temp < 0) ? 0 : temp;
+			m_outBuffer[i] = (temp < 0) ? 0 : temp;
 		}
 	}
 }
@@ -72,13 +71,10 @@ void imageDSP::readImage()
 			edge_elements[1] = *it;
 		}
 	}
-//	std::cout << "pixel mais escuro: " << edge_elements[0] << "\tpixel mais claro: " << edge_elements[1]<<"\n";
 
 	streamIn.close();
-
-	//std::cout << "Width: " << m_width << "\tHeight: " << m_height << "\tbitDepth: " << m_bitDepth << "\n";
 }
-void imageDSP::writeImage(std::string _newName, std::vector<unsigned char>& _writeBuf)
+void imageDSP::writeImage(std::string _newName)
 {
 	outImgName = _newName;
 
@@ -90,7 +86,7 @@ void imageDSP::writeImage(std::string _newName, std::vector<unsigned char>& _wri
 		output.write(colorTable.data(), colorTable.size());
 	}
 
-	output.write((char*)(&_writeBuf[0]), _writeBuf.size());
+	output.write((char*)(&m_outBuffer[0]), m_outBuffer.size());
 
 	output.close();
 }
@@ -122,7 +118,7 @@ long int imageDSP::get_imgSize()
 {
 	return m_width * m_height;
 }
-void imageDSP::computeHistogram(std::vector<unsigned char>& _inputData, std::vector<float>& _histogram, int max_val)
+void imageDSP::computeHistogram(int max_val)
 {
 	int i;
 	int value = max_val + 1;
@@ -134,34 +130,34 @@ void imageDSP::computeHistogram(std::vector<unsigned char>& _inputData, std::vec
 
 	for (i = 0; i < img_size; i++)
 	{
-		value = _inputData.at(i);
+		value = buffer.at(i);
 		internalHistogram[value] = internalHistogram[value] + 1;
 	}
 
 	temp_size = internalHistogram.size();
-	_histogram.resize(temp_size);
+	m_histogram.resize(temp_size);
 
 	for (i = 0; i < temp_size; i++)
 	{
-		_histogram[i] = (float)internalHistogram[i] / (float)img_size;
+		m_histogram[i] = (float)internalHistogram[i] / (float)img_size;
 	}
 	
 }
-void imageDSP::cumulativeFrequency(std::string _fileName, std::vector<unsigned char> frequency)
+void imageDSP::cumulativeFrequency(std::string _fileName)
 {
 	std::ofstream output(_fileName, std::ios::out | std::ios::binary);
 	int n, sum = 0;
 	int count = 1;
 	long int imgSize = get_imgSize();
 	//this->copyImageData(frequency);
-	n = frequency.size();
+	n = m_outBuffer.size();
 
-	sort(frequency.begin(), frequency.end());
+	sort(m_outBuffer.begin(), m_outBuffer.end());
 	if (output.is_open())
 	{
 		for (int i = 1; i <= n; i++)
 		{
-			if (i == n or frequency[i] != frequency[i - 1])
+			if (i == n or m_outBuffer[i] != m_outBuffer[i - 1])
 			{
 				sum += count;
 				output << (float)sum / imgSize << "\n";// << (float)frequency[i - 1] << "\n";
@@ -178,18 +174,18 @@ void imageDSP::cumulativeFrequency(std::string _fileName, std::vector<unsigned c
 
 	output.close();
 }
-bool imageDSP::writeHistogram(std::string _fileName, std::vector<float> _data)
+bool imageDSP::writeHistogram(std::string _fileName)
 {
 	std::ofstream output(_fileName, std::ios::out | std::ios::binary);
 	
-	int i = _data.size();
+	int i = m_histogram.size();
 	
 
 	if (output.is_open())
 	{
 		for (int j = 0; j < i; j++)
 		{
-			output << _data[j] << "\n";
+			output << m_histogram[j] << "\n";
 		}
 	}
 	else
@@ -201,7 +197,7 @@ bool imageDSP::writeHistogram(std::string _fileName, std::vector<float> _data)
 
 	return 1;
 }
-void imageDSP::equalizeHistogram(std::vector<unsigned char>& _inputData, int max_val)
+void imageDSP::equalizeHistogram(int max_val)
 {
 	int sum = 0;
 	int total = get_imgSize();
@@ -211,7 +207,7 @@ void imageDSP::equalizeHistogram(std::vector<unsigned char>& _inputData, int max
 	
 
 	for (int i = 0; i < total; ++i) {
-		hist[_inputData[i]]++;
+		hist[buffer[i]]++;
 	}
 
 	int i = 0;
@@ -219,7 +215,7 @@ void imageDSP::equalizeHistogram(std::vector<unsigned char>& _inputData, int max
 
 	if (hist[i] == total) {
 		for (int j = 0; j < total; ++j) {
-			_inputData[j] = i;
+			buffer[j] = i;
 		}
 		return;
 	}
@@ -235,6 +231,6 @@ void imageDSP::equalizeHistogram(std::vector<unsigned char>& _inputData, int max
 	}
 
 	for (int i = 0; i < total; ++i) {
-		_inputData[i] = lut[_inputData[i]];
+		buffer[i] = lut[buffer[i]];
 	}
 }

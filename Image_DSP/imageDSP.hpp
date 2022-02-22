@@ -29,10 +29,13 @@ protected:
 	unsigned char* inBuff;
 	unsigned char* outBuff;
 
-	std::array<char, 54> header{};
-	std::array<char, 1024> colorTable{};
-	std::vector<unsigned char> buffer{};
+	std::array<char, 54> header;
+	std::array<char, 1024> colorTable;
 
+	std::vector<unsigned char> buffer;
+	std::vector<unsigned char> m_outBuffer;
+
+	std::vector<float> m_histogram;
 
 
 public: 
@@ -40,16 +43,16 @@ public:
 	imageDSP(std::string _imgName);
 	~imageDSP();
 	void readImage();
-	void writeImage(std::string _newName, std::vector<unsigned char>& _writeBuf);
+	void writeImage(std::string _newName);
 	void copyImageData(std::vector<unsigned char>& _destBuff);
 	int getWidth();
 	int getHeight();
 	int getbitDepth();
 	long int get_imgSize();
-	void brigthnessControl(int _brightness_threshold, std::vector<unsigned char> &_outBuf);
-	void computeHistogram(std::vector<unsigned char>& _inputData, std::vector<float>& _histogram, int _max_val);
-	void cumulativeFrequency(std::string _fileName, std::vector<unsigned char> frequency);
-	bool writeHistogram(std::string _fileName, std::vector<float> _data);
-	void equalizeHistogram(std::vector<unsigned char>& _inputData, int max_val);
+	void brigthnessControl(int _brightness_threshold);
+	void computeHistogram(int _max_val);
+	void cumulativeFrequency(std::string _fileName);
+	bool writeHistogram(std::string _fileName);
+	void equalizeHistogram(int max_val);
 };
 
