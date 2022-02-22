@@ -35,11 +35,11 @@
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
-*.vs/
+
 
 
 Debug/
-
+.vs/
 Image_DSP/Debug/
 Image_DSP/images/
 Image_DSP/notes/
