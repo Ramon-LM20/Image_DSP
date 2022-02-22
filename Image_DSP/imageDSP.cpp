@@ -231,6 +231,6 @@ void imageDSP::equalizeHistogram(int max_val)
 	}
 
 	for (int i = 0; i < total; ++i) {
-		buffer[i] = lut[buffer[i]];
+		m_outBuffer[i] = lut[buffer[i]];
 	}
 }
