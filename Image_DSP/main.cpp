@@ -19,7 +19,6 @@ int main(int argc, char* argv[])
 
 	imageDSP* myImage = new imageDSP(imageName2); //Cria o objeto na heap passando apenas o path para o construtor
 
-	myImage->readImage();
 	myImage->brigthnessControl(-15);
 	myImage->writeImage("images/imageDarker.bmp");
 	
@@ -35,6 +34,8 @@ int main(int argc, char* argv[])
 	//myImage->cumulativeFrequency("notes/FREQ_EQUAL.txt", img_buffer);
 
 	myImage->writeImage("images/equalizada.bmp");
+
+	myImage->rotateClockWise();
 
 	delete myImage;
 

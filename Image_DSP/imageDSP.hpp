@@ -33,7 +33,7 @@ protected:
 	std::array<char, 1024> colorTable;
 
 	std::vector<unsigned char> buffer;
-	std::vector<unsigned char> m_outBuffer;
+	std::vector<unsigned char> backup_buffer;
 
 	std::vector<float> m_histogram;
 
@@ -45,6 +45,7 @@ public:
 	void readImage();
 	void writeImage(std::string _newName);
 	void copyImageData(std::vector<unsigned char>& _destBuff);
+	void setBackup();
 	int getWidth();
 	int getHeight();
 	int getbitDepth();
@@ -54,5 +55,6 @@ public:
 	void cumulativeFrequency(std::string _fileName);
 	bool writeHistogram(std::string _fileName);
 	void equalizeHistogram(int max_val);
+	void rotateClockWise();
 };
 

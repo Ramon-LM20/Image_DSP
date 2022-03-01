@@ -3,17 +3,24 @@
 imageDSP::imageDSP(std::string _imgName)
 { 
 	imgName = _imgName;
+	this->readImage();
+	this->setBackup();
 }
 imageDSP::~imageDSP()
 { 
 
+}
+
+void imageDSP::setBackup()
+{
+	copyImageData(backup_buffer);
 }
 void imageDSP::brigthnessControl(int _brightness_threshold)
 {
 	long int sizeBuffer = 0;
 
 	sizeBuffer = this->buffer.size();
-	m_outBuffer.resize(sizeBuffer);
+	buffer.resize(sizeBuffer);
 
 	if (_brightness_threshold > 0)
 	{
@@ -21,7 +28,7 @@ void imageDSP::brigthnessControl(int _brightness_threshold)
 		{
 			int temp = (buffer[i] + _brightness_threshold);
 
-			m_outBuffer[i] = (temp > 255) ? 255 : temp;
+			buffer[i] = (temp > 255) ? 255 : temp;
 		}
 	}
 	if (_brightness_threshold < 0)
@@ -30,7 +37,7 @@ void imageDSP::brigthnessControl(int _brightness_threshold)
 		{
 			int temp = (buffer[i] + _brightness_threshold);
 
-			m_outBuffer[i] = (temp < 0) ? 0 : temp;
+			buffer[i] = (temp < 0) ? 0 : temp;
 		}
 	}
 }
@@ -86,7 +93,7 @@ void imageDSP::writeImage(std::string _newName)
 		output.write(colorTable.data(), colorTable.size());
 	}
 
-	output.write((char*)(&m_outBuffer[0]), m_outBuffer.size());
+	output.write((char*)(&buffer[0]), buffer.size());
 
 	output.close();
 }
@@ -150,14 +157,14 @@ void imageDSP::cumulativeFrequency(std::string _fileName)
 	int count = 1;
 	long int imgSize = get_imgSize();
 	//this->copyImageData(frequency);
-	n = m_outBuffer.size();
+	n = buffer.size();
 
-	sort(m_outBuffer.begin(), m_outBuffer.end());
+	sort(buffer.begin(), buffer.end());
 	if (output.is_open())
 	{
 		for (int i = 1; i <= n; i++)
 		{
-			if (i == n or m_outBuffer[i] != m_outBuffer[i - 1])
+			if (i == n or buffer[i] != buffer[i - 1])
 			{
 				sum += count;
 				output << (float)sum / imgSize << "\n";// << (float)frequency[i - 1] << "\n";
@@ -231,6 +238,26 @@ void imageDSP::equalizeHistogram(int max_val)
 	}
 
 	for (int i = 0; i < total; ++i) {
-		m_outBuffer[i] = lut[buffer[i]];
+		buffer[i] = lut[backup_buffer[i]];
 	}
+}
+void imageDSP::rotateClockWise()
+{
+	int columns = getWidth();
+	int rows = getHeight();
+	int size = get_imgSize();
+
+	std::reverse(buffer.begin(), buffer.end());
+	
+	for (int i = 0; i < columns; i++)
+	{
+		for (int j = 0; j < rows; j++)
+		{
+			if (i < j)
+			{
+				std::swap(buffer[i], buffer[j]);
+			}
+		}
+	}
+	writeImage("images/rotate.bmp");
 }
