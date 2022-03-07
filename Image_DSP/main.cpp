@@ -35,7 +35,9 @@ int main(int argc, char* argv[])
 
 	myImage->writeImage("images/equalizada.bmp");
 
-	myImage->rotateClockWise();
+	myImage->flipImage();
+
+	myImage->setNegative();
 
 	delete myImage;
 

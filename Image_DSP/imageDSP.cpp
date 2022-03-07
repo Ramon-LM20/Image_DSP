@@ -241,23 +241,26 @@ void imageDSP::equalizeHistogram(int max_val)
 		buffer[i] = lut[backup_buffer[i]];
 	}
 }
-void imageDSP::rotateClockWise()
+void imageDSP::flipImage()
 {
-	int columns = getWidth();
-	int rows = getHeight();
+	std::reverse(buffer.begin(), buffer.end());
+
+	writeImage("images/flipped.bmp");
+}
+void imageDSP::setNegative()
+{
+
 	int size = get_imgSize();
 
-	std::reverse(buffer.begin(), buffer.end());
-	
-	for (int i = 0; i < columns; i++)
+	for (int i = 0; i < size; i++)
 	{
-		for (int j = 0; j < rows; j++)
-		{
-			if (i < j)
-			{
-				std::swap(buffer[i], buffer[j]);
-			}
-		}
+		buffer[i] = GREYSCALE - buffer[i];
 	}
-	writeImage("images/rotate.bmp");
+
+	writeImage("images/negative.bmp");
+}
+void imageDSP::rotateClockWise()
+{
+	int rows = getWidth();
+	int columns = getHeight();
 }

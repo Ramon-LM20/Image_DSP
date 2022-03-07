@@ -11,7 +11,7 @@
 static const int BMP_HEADER_SIZE = 54;
 static const int BMP_COLOR_TABLE_SIZE = 1024;
 static const int _512by512_IMG_SIZE = 262144;
-static const int GREYSCALE = 256;
+static const int GREYSCALE = 255;
 
 class imageDSP 
 {
@@ -55,6 +55,8 @@ public:
 	void cumulativeFrequency(std::string _fileName);
 	bool writeHistogram(std::string _fileName);
 	void equalizeHistogram(int max_val);
+	void flipImage();
+	void setNegative();
 	void rotateClockWise();
 };
 
